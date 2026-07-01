@@ -2,41 +2,50 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface FormData {
-  email: string;
+  login: string;
   password: string;
 }
 
 export default function LoginForm() {
-  const [formData, setFormData] = useState<FormData>({ email: '', password: '' });
+  const [formData, setFormData] = useState<FormData>({ login: '', password: '' });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg(null);
+
+    try {
+      const res = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+
+      if (res.ok && res.status === 200) {
+        router.push('/');
+      } else {
+        const data = await res.json();
+        setErrorMsg(data.error || 'Ошибка входа');
+        console.log('API вернул ошибку:', data);
+      }
+
+    } catch (err) {
+      console.error(err);
+      setErrorMsg('Сетевая ошибка. Сервер недоступен.');
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const res = await fetch('/api/auth/signin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    });
-
-    if (res.status === 200) {
-      router.push('/');
-    } else {
-      const data = await res.json();
-      setErrorMsg(data.error || 'Ошибка входа');
-      console.log('API вернул ошибку:', data);
-    }
-  };
 
   return (
     <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md border border-gray-200">
@@ -48,16 +57,16 @@ export default function LoginForm() {
 
       <form onSubmit={handleSubmit} noValidate>
         <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-            E-mail
+          <label htmlFor="login" className="block text-sm font-medium text-gray-700 mb-2">
+            login
           </label>
           <input
-            type="email"
-            id="email"
-            name="email"
+            type="text"
+            id="login"
+            name="login"
             required
-            autoComplete="username"
-            value={formData.email}
+            autoComplete="login"
+            value={formData.login}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
@@ -81,8 +90,8 @@ export default function LoginForm() {
 
         <button
           type="submit"
-          disabled={!formData.email || !formData.password}
-          className={`w-full py-2 px-4 rounded-md font-semibold transition-colors ${formData.email && formData.password
+          disabled={!formData.login || !formData.password}
+          className={`w-full py-2 px-4 rounded-md font-semibold transition-colors ${formData.login && formData.password
             ? 'bg-blue-600 hover:bg-blue-700 text-white'
             : 'bg-gray-400 cursor-not-allowed'
             }`}

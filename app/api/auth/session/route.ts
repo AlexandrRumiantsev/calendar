@@ -4,6 +4,8 @@ import { NextResponse } from 'next/server';
 export async function GET(request: Request) {
   // Получаем секрет из переменных окружения (в .env)
   const secret = process.env.NEXTAUTH_SECRET;
+
+  console.log('request',request)
   
   /*
   if (!secret) {
@@ -17,14 +19,14 @@ export async function GET(request: Request) {
       req: request,
       secret: secret,
     });*/
-    const token = 'asdsadasd';
+    const token = null;
 
     // Если токен есть - возвращаем его как объект { user }
     if (token) {
-      return NextResponse.json({ user: token }, { status: 200 });
+      //return NextResponse.json({ user: token }, { status: 200 });
     } else {
       // Если токена нет - возвращаем пустой объект
-      return NextResponse.json({ user: null }, { status: 200 });
+      //return NextResponse.json({ user: null }, { status: 200 });
     }
     
   } catch (error) {
