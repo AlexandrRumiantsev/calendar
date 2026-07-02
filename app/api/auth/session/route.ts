@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   // Получаем секрет из переменных окружения (в .env)
-  const secret = process.env.NEXTAUTH_SECRET;
 
   console.log('request',request)
   

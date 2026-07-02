@@ -1,7 +1,7 @@
 'use client';
 
-import { SessionProvider } from "next-auth/react";
 import { signOut } from 'next-auth/react';
+import AuthGuard from './components/AuthGuard/AuthGuard';
 
 function Main() {
   return (
@@ -17,8 +17,8 @@ function Main() {
 
 export default function Home() {
   return (
-    <SessionProvider>
-        <Main />
-    </SessionProvider>
+    <AuthGuard>
+      <Main />
+    </AuthGuard>
   );
 }

@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../contexts/AuthContext';
 
 interface FormData {
   login: string;
@@ -14,6 +15,8 @@ export default function LoginForm() {
   const [formData, setFormData] = useState<FormData>({ login: '', password: '' });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const router = useRouter();
+  const { setAuthenticated } = useAuth()
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +31,7 @@ export default function LoginForm() {
 
 
       if (res.ok && res.status === 200) {
+        setAuthenticated(true)
         router.push('/');
       } else {
         const data = await res.json();

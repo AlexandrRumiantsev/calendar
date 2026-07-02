@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import LoginForm from './form';
 
-
 export const metadata: Metadata = {
   title: 'Вход в систему',
 };
