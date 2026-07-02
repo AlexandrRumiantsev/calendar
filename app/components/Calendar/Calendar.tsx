@@ -28,7 +28,7 @@ export const Calendar = () => {
         const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
 
-        return allEvents.filter((event) => {
+        return allEvents?.filter((event) => {
             return event.start < endOfDay && event.end > startOfDay;
         });
     };
@@ -45,6 +45,32 @@ export const Calendar = () => {
     const handleSelectSlot = (slotInfo: any) => {
         setSelectedDate(slotInfo.start);
     };
+
+    const handleSaveEvent = async (e: React.ChangeEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.target)
+        const objectData = Object.fromEntries(formData);
+        const res = await fetch('/api/calendar/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(objectData),
+        });
+        const result = await res.json();
+        
+        const convertedEvent = {
+            id: result.data.ID,
+            title: result.data.TITLE,
+            start: new Date(result.data.DATE_START),
+            end: new Date(result.data.DATE_END),
+        };
+
+        console.log()
+
+        setEvents((prevEvents) => ([
+            ...prevEvents,
+            convertedEvent
+        ]))
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -92,6 +118,14 @@ export const Calendar = () => {
                             <li>Событий на этот день нет.</li>
                         )}
                     </ul>
+                    <h3>Добавить событие в календарь</h3>
+                    <form onSubmit={handleSaveEvent}>
+                        <input type="text" placeholder='заголовок' name='TITLE'/>
+                        <input type="text" placeholder='текст'  name='TEXT'/>
+                        <input type="datetime-local" placeholder='Дата начала задачи'  name='DATE_START'/>
+                        <input type="datetime-local" placeholder='Дата конеца задачи'  name='DATE_END'/>
+                        <input type="submit" value='Сохранить' />
+                    </form>
                 </div>
             )}
         </div>
